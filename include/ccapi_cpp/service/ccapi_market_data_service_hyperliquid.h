@@ -90,7 +90,7 @@ class MarketDataServiceHyperliquid: public MarketDataService {
         document.Parse<rj::kParseNumbersAsStringsFlag>(textMessage.c_str());
         std::string channelId = document["channel"].GetString();
         if (channelId == CCAPI_WEBSOCKET_HYPERLIQUID_CHANNEL_MARKET_DEPTH) {
-            MarketDataMessage::RecapType recapType = MarketDataMessage::RecapType::NONE;
+            MarketDataMessage::RecapType recapType = MarketDataMessage::RecapType::SOLICITED;
             const rj::Value data = document["data"].GetObject();
             std::string symbolId = data["coin"].GetString();
             std::string exchangeSubscriptionId = channelId + ":" + symbolId;
@@ -98,8 +98,7 @@ class MarketDataServiceHyperliquid: public MarketDataService {
             marketDataMessage.type = MarketDataMessage::Type::MARKET_DATA_EVENTS_MARKET_DEPTH;
             marketDataMessage.recapType = recapType;
             marketDataMessage.exchangeSubscriptionId = exchangeSubscriptionId;
-            marketDataMessage.tp = UtilTime::parse(std::string(data["time"].GetString()));
-
+            marketDataMessage.tp = TimePoint(std::chrono::milliseconds(std::stoll(data["time"].GetString())));
             rj::GenericArray levels = data["levels"].GetArray();
             for (const auto& y : levels[0].GetArray()) {
                 MarketDataMessage::TypeForDataPoint dataPoint;

@@ -544,12 +544,15 @@ class MarketDataService : public Service {
       std::vector<MarketDataMessage> marketDataMessageList;
       this->processTextMessage(wsConnectionPtr, textMessage, timeReceived, event, marketDataMessageList);
       if (!marketDataMessageList.empty()) {
+        std::cout << "not empty" << std::endl;
         this->processMarketDataMessageList(wsConnectionPtr, textMessage, timeReceived, event, marketDataMessageList);
       }
       if (!event.getMessageList().empty()) {
+        std::cout << "event not empty" << std::endl;
         this->eventHandler(event, nullptr);
       }
     } else {
+      std::cout << "empty" << std::endl;
       Event event;
       event.setType(Event::Type::SUBSCRIPTION_DATA);
       Message message;
